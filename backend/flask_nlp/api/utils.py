@@ -1,7 +1,6 @@
 from flask_nlp import db
 from ..models import *
 from flask import make_response
-
 JSON_MIME_TYPE = 'application/json'
 
 

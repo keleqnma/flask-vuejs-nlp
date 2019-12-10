@@ -13,7 +13,7 @@ chrome_options.add_argument('--disable-gpu')
 爬虫api：
     搜索结果页：get_index_result(search)
     小说章节页：get_chapter(url)
-    章节内容：get_article(url)
+    章节内容：get_content(url)
 """
 
 
@@ -92,7 +92,7 @@ class CpSpider(object):
             yield data
 
     # 章节内容页数据
-    def get_article(self, url):
+    def get_content(self, url):
         self.parse_url(url)
         contents = self.browser.find_elements_by_xpath(
             '//*[@id="cpReadContent"]/p')
@@ -107,4 +107,4 @@ class CpSpider(object):
 #    print(i)
 
 # cp.parse_url(cp.search_url + '{keyword}'.format(keyword='卡比丘'))
-# print(cp.get_article('https://www.gongzicp.com/read-112530.html'))
+# print(cp.get_content('https://www.gongzicp.com/read-112530.html'))

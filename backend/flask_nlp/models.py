@@ -79,9 +79,31 @@ class Content(db.Model):
     def to_json(self):
         json_content = {
             'url':
-            url_for('api.content', chapter_id=self.chapter_id, _external=True),
+            url_for('api.contentlist',
+                    chapter_id=self.chapter_id,
+                    _external=True),
             'content':
             self.content
+        }
+
+        return json_content
+
+
+class ContentSeg(db.Model):
+    __tablename__ = 'contentsegs'
+    id = db.Column(db.Integer, primary_key=True)
+    contentseg = db.Column(db.Text)
+
+    content_id = db.Column(db.Integer, db.ForeignKey('chapters.id'))
+
+    def to_json(self):
+        json_content = {
+            'url':
+            url_for('api.contentseg',
+                    content_id=self.content_id,
+                    _external=True),
+            'contentseg':
+            self.contentseg
         }
 
         return json_content
