@@ -1,10 +1,10 @@
-import 'bootstrap/dist/css/bootstrap.css';
-import BootstrapVue from 'bootstrap-vue';
-import Vue from 'vue';
-import App from './App.vue';
-import router from './router';
+import Vue from 'vue'
+import App from './App.vue'
+import router from './router'
+import './common/theme/index.css'
+import ElementUI from 'element-ui'
 
-Vue.use(BootstrapVue);
+Vue.use(ElementUI);
 
 Vue.config.productionTip = false;
 

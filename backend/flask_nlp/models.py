@@ -25,12 +25,8 @@ class Novel(db.Model):
 
     def to_json(self):
         json_novel = {
-            'url': url_for('api.book_list',
-                           keyword=self.keyword,
-                           _external=True),
-            #'url': url_for('api.get_result', search=self.keyword,_external=True),
+            'id': self.id,
             'book_name': self.book_name,
-            'book_url': self.book_url,
             'book_img': self.book_img,
             'author': self.author,
             'type': self.type,
@@ -54,14 +50,7 @@ class Chapter(db.Model):
     book_id = db.Column(db.Integer, db.ForeignKey('novels.id'))
 
     def to_json(self):
-        json_chapter = {
-            'url':
-            url_for('api.chapter_list', book_id=self.book_id, _external=True),
-            'chapter_name':
-            self.chapter,
-            'chapter_url':
-            self.chapter_url,
-        }
+        json_chapter = {'id': self.id, 'chapter_name': self.chapter}
 
         return json_chapter
 
@@ -77,14 +66,7 @@ class Content(db.Model):
     chapter_id = db.Column(db.Integer, db.ForeignKey('chapters.id'))
 
     def to_json(self):
-        json_content = {
-            'url':
-            url_for('api.contentlist',
-                    chapter_id=self.chapter_id,
-                    _external=True),
-            'content':
-            self.content
-        }
+        json_content = {'content': self.content}
 
         return json_content
 
@@ -97,14 +79,7 @@ class ContentSeg(db.Model):
     content_id = db.Column(db.Integer, db.ForeignKey('chapters.id'))
 
     def to_json(self):
-        json_content = {
-            'url':
-            url_for('api.contentseg',
-                    content_id=self.content_id,
-                    _external=True),
-            'contentseg':
-            self.contentseg
-        }
+        json_content = {'contentseg': self.contentseg}
 
         return json_content
 
