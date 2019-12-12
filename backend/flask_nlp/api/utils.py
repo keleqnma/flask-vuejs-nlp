@@ -76,7 +76,7 @@ def json_response(data='', status=200, headers=None):
 def generate_wordcloud(content):
     stopwords = set(STOPWORDS)
     wordcloud = WordCloud(
-        scale=3,
+        scale=3.5,
         max_font_size=100,
         background_color="white",
         stopwords=stopwords,

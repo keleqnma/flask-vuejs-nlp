@@ -74,8 +74,8 @@ export default {
         .get(path)
         .then(res => {
           this.book_information = res.data;
-          if (this.book_information.profile == "")
-            this.book_information.profile = "暂无简介。";
+          if (this.book_information.profile=="")
+            this.book_information.profile="暂无简介。"
           console.log(this.book_information);
         })
         .catch(error => {

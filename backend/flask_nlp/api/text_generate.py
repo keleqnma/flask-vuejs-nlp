@@ -11,12 +11,12 @@ from ..spider.spider import CpSpider
 api = Blueprint('api', __name__)
 
 
-#随机抽取一本小说放在首页
+#随机抽取十本小说放在首页
 @api.route('/books', methods=['GET'])
 def book_random():
-    rand = random.randrange(0, Novel.query.count())
-    book = Novel.query[rand]
-    return jsonify({'books': [book.to_json()]}), 200
+    rand = random.randrange(0, Novel.query.count() - 10)
+    books = Novel.query.filter(Novel.id >= rand).limit(10).all()
+    return jsonify({'books': [book.to_json() for book in books]}), 200
 
 
 @api.route('/books/<int:book_id>', methods=['GET'])
