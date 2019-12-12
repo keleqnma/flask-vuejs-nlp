@@ -19,6 +19,12 @@ def book_random():
     return jsonify({'books': [book.to_json()]}), 200
 
 
+@api.route('/books/<int:book_id>', methods=['GET'])
+def book_one(book_id):
+    book = Novel.query.filter_by(id=book_id).first()
+    return jsonify(book.to_json()), 200
+
+
 @api.route('/books/keyword/<keyword>', methods=['GET', 'POST'])
 def book_list(keyword):
     books = Novel.query.filter_by(keyword=keyword).all()

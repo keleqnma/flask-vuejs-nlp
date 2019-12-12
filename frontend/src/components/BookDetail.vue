@@ -1,20 +1,38 @@
 
 <template>
-  <el-container style="height: 700px; border: 1px solid #eee">
-    <el-page-header @back="goBack" content="详情页面"></el-page-header>
-    <el-header>
-      <p style="font-family:Helvetica Neue">Coco literature</p>
-    </el-header>
+  <div>
+    <div
+      style="text-align: right; font-size: 15px;  background-color: #b3c0d1;
+        color: #333;
+        line-height: 60px; font-family: Helvetica"
+    >COCO LITERATURE</div>
 
-    <el-main>
-      <el-button
-        icon="el-icon-notebook-2"
-        @click="showdetail(chapter)"
-        v-bind:key="chapter.id"
-        v-for="chapter in chapters"
-      >{{chapter.chapter_name}}</el-button>
-    </el-main>
-  </el-container>
+    <el-container style="height: 700px; font-family: 微软雅黑;border: 1px solid #eee">
+      <el-main v-loading.fullscreen.lock="fullscreenLoading">
+        <el-page-header @back="goBack" content="详情页面"></el-page-header>
+        <div style="line-height: 30px;">
+          <img :src="book_information.book_img" class="head_pic" height="120" />
+        </div>
+        <div style="line-height: 50px;">
+          <span style="font-family:微软雅黑; font-size:20px">{{book_information.book_name}}</span>
+          <br />
+          <el-tag type="success">{{book_information.type}}</el-tag>
+          <i style="margin-left: 20px" class="el-icon-edit"></i>
+          <span style="margin-left: 10px">{{ book_information.author }}</span>
+          <i style="margin-left: 20px" class="el-icon-time"></i>
+          <span style="margin-left: 10px">{{ book_information.last_update }}</span>
+        </div>
+        <el-divider>"{{book_information.profile}}"</el-divider>
+
+        <el-button
+          icon="el-icon-notebook-2"
+          @click="showdetail(chapter)"
+          v-bind:key="chapter.id"
+          v-for="(chapter,index) in chapters"
+        >{{chapter.chapter_name}}</el-button>
+      </el-main>
+    </el-container>
+  </div>
 </template>
 
 <script>
@@ -24,12 +42,17 @@ export default {
   name: "Ping",
   data() {
     return {
+      book_id: "",
+      book_information: {},
       chapters: [],
       keyword: "",
       msg: ""
     };
   },
   methods: {
+    goBack() {
+      this.$router.push({ path: "/ping" });
+    },
     getChapters(book_id) {
       const path = `http://localhost:5000/cpNlp/api/v1.0/chapters/${book_id}`;
       axios
@@ -37,6 +60,23 @@ export default {
         .then(res => {
           this.chapters = res.data.chapters;
           console.log(this.chapters);
+          this.fullscreenLoading = false;
+        })
+        .catch(error => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
+    },
+    getBookInformantion(book_id) {
+      const path = `http://localhost:5000/cpNlp/api/v1.0/books/${book_id}`;
+      console.log(path);
+      axios
+        .get(path)
+        .then(res => {
+          this.book_information = res.data;
+          if (this.book_information.profile == "")
+            this.book_information.profile = "暂无简介。";
+          console.log(this.book_information);
         })
         .catch(error => {
           // eslint-disable-next-line
@@ -47,14 +87,17 @@ export default {
       this.$router.push({
         path: "/chapters",
         query: {
-          chapter_id: chapter.id
+          chapter_id: chapter.id,
+          book_id: this.book_id
         }
       });
     }
   },
   created() {
-    this.name = this.$route.query.book_name;
-    this.getChapters(this.$route.query.book_id);
+    this.fullscreenLoading = true;
+    this.book_id = this.$route.query.book_id;
+    this.getBookInformantion(this.book_id);
+    this.getChapters(this.book_id);
   }
 };
 </script>
@@ -71,5 +114,12 @@ export default {
   color: #333;
   text-align: center;
   line-height: 200px;
+}
+.el-divider__text {
+  position: absolute;
+  background-color: #e9eef3;
+  padding: 20px;
+  color: #303133;
+  line-height: 20px;
 }
 </style>

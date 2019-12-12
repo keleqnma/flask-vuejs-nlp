@@ -35,9 +35,6 @@ class Novel(db.Model):
         }
         return json_novel
 
-    def __repr__(self):
-        return '<Novel %r>' % self.book_name
-
 
 #Chapter模型
 class Chapter(db.Model):
@@ -47,41 +44,53 @@ class Chapter(db.Model):
     chapter_url = db.Column(db.String, index=True)
 
     content = db.relationship('Content', backref='chapter', lazy='dynamic')
+    wordsegs = db.relationship('WordSeg', backref='chapter', lazy='dynamic')
+    postagsegs = db.relationship('PostWordSeg',
+                                 backref='chapter',
+                                 lazy='dynamic')
+
     book_id = db.Column(db.Integer, db.ForeignKey('novels.id'))
 
     def to_json(self):
-        json_chapter = {'id': self.id, 'chapter_name': self.chapter}
+        json_chapter = {
+            'id': self.id,
+            'book_id': self.book_id,
+            'chapter_name': self.chapter
+        }
 
         return json_chapter
-
-    def __repr__(self):
-        return '<Post %r>' % self.chapter
 
 
 class Content(db.Model):
     __tablename__ = 'contents'
     id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Text)
+    content = db.Column(db.String)
 
     chapter_id = db.Column(db.Integer, db.ForeignKey('chapters.id'))
 
     def to_json(self):
-        json_content = {'content': self.content}
+        json_content = {'id': self.chapter_id, 'content': self.content}
 
         return json_content
 
 
-class ContentSeg(db.Model):
-    __tablename__ = 'contentsegs'
+class WordSeg(db.Model):
+    __tablename__ = 'wordsegs'
     id = db.Column(db.Integer, primary_key=True)
-    contentseg = db.Column(db.Text)
 
-    content_id = db.Column(db.Integer, db.ForeignKey('chapters.id'))
+    wordseg = db.Column(db.String)
 
-    def to_json(self):
-        json_content = {'contentseg': self.contentseg}
+    chapter_id = db.Column(db.Integer, db.ForeignKey('chapters.id'))
 
-        return json_content
+
+class PostWordSeg(db.Model):
+    __tablename__ = 'postcontentsegs'
+    id = db.Column(db.Integer, primary_key=True)
+
+    wordseg = db.Column(db.String)
+    postag = db.Column(db.String)
+
+    chapter_id = db.Column(db.Integer, db.ForeignKey('chapters.id'))
 
 
 class Alembic(db.Model):
