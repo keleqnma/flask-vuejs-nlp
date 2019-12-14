@@ -1,12 +1,6 @@
 
 <template>
   <div>
-    <div
-      style="text-align: right; font-size: 15px;  background-color: #b3c0d1;
-        color: #333;
-        line-height: 60px; font-family: Helvetica"
-    >COCO LITERATURE</div>
-
     <el-container style="height: 700px; font-family: 微软雅黑;border: 1px solid #eee">
       <el-main v-loading.fullscreen.lock="fullscreenLoading">
         <el-page-header @back="goBack" content="详情页面"></el-page-header>
@@ -16,11 +10,19 @@
         <div style="line-height: 50px;">
           <span style="font-family:微软雅黑; font-size:20px">{{book_information.book_name}}</span>
           <br />
+
           <el-tag type="success">{{book_information.type}}</el-tag>
           <i style="margin-left: 20px" class="el-icon-edit"></i>
           <span style="margin-left: 10px">{{ book_information.author }}</span>
           <i style="margin-left: 20px" class="el-icon-time"></i>
           <span style="margin-left: 10px">{{ book_information.last_update }}</span>
+          <el-link
+            style="margin-left: 20px"
+            :href="book_information.book_url"
+            target="_blank"
+            type="success"
+            :underline="false"
+          >原书链接</el-link>
         </div>
         <el-divider>"{{book_information.profile}}"</el-divider>
 
@@ -28,7 +30,7 @@
           icon="el-icon-notebook-2"
           @click="showdetail(chapter)"
           v-bind:key="chapter.id"
-          v-for="(chapter,index) in chapters"
+          v-for="chapter in chapters"
         >{{chapter.chapter_name}}</el-button>
       </el-main>
     </el-container>
@@ -74,8 +76,8 @@ export default {
         .get(path)
         .then(res => {
           this.book_information = res.data;
-          if (this.book_information.profile=="")
-            this.book_information.profile="暂无简介。"
+          if (this.book_information.profile == "")
+            this.book_information.profile = "暂无简介。";
           console.log(this.book_information);
         })
         .catch(error => {

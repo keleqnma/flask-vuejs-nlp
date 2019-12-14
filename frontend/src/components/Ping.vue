@@ -1,11 +1,6 @@
 
 <template style="margin-top: 0px;">
   <div class="container">
-    <div
-      style="text-align: right; font-size: 15px;  background-color: #b3c0d1;
-        color: #333;
-        line-height: 60px; font-family: Helvetica"
-    >COCO LITERATURE</div>
     <el-container
       class="ui-widget-container"
       direction="vertical"
@@ -27,15 +22,17 @@
             </el-col>
           </el-row>
         </center>
-        <el-divider>
-          <el-button
-            type="primary"
-            icon="el-icon-magic-stick"
-            @click="getRandomBook()"
-            v-loading.fullscreen.lock="fullscreenLoading"
-            circle
-          ></el-button>
-        </el-divider>
+        <div style="margin: 50px 0;">
+          <el-divider>
+            <el-button
+              type="primary"
+              icon="el-icon-magic-stick"
+              @click="getRandomBook()"
+              v-loading.fullscreen.lock="fullscreenLoading"
+              circle
+            ></el-button>
+          </el-divider>
+        </div>
         <div>
           <div
             style="line-height: 40px; background-color: #FFF;"

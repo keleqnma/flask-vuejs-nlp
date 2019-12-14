@@ -4,8 +4,19 @@ from flask import make_response
 from wordcloud import WordCloud, STOPWORDS
 import base64
 from io import BytesIO
+import re
 
 JSON_MIME_TYPE = 'application/json'
+ner_dict = {
+    'B-PER': '人名',
+    'I-PER': '人名',
+    'B-LOC': '地名',
+    'I-LOC': '地名',
+    'B-ORG': '机构名',
+    'I-ORG': '机构名',
+    'O': '无'
+}
+
 post_dict = {
     'n': '名词',
     't': '时间词',
@@ -44,6 +55,25 @@ post_dict = {
     'ad': '副形词',
     'an': '名形词'
 }
+
+
+#分句
+def divide_sentence(content):
+    content = re.split('(。|！|\!|\.|？|\?)', content)  # 简单分句，保留分割符
+    last = ''
+    if len(content) % 2 != 0:
+        last = content[-1]
+    content = [
+        content[2 * i] + content[2 * i + 1]
+        for i in range(int(len(content) / 2))
+    ]  # 将分隔符与句子拼接
+    if last != '':
+        content.append(last)
+
+    return content
+
+
+
 
 
 def add_novel(data, keyword):

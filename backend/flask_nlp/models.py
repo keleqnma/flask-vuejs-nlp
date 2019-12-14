@@ -26,6 +26,7 @@ class Novel(db.Model):
     def to_json(self):
         json_novel = {
             'id': self.id,
+            'book_url': self.book_url,
             'book_name': self.book_name,
             'book_img': self.book_img,
             'author': self.author,
@@ -91,6 +92,25 @@ class PostWordSeg(db.Model):
     postag = db.Column(db.String)
 
     chapter_id = db.Column(db.Integer, db.ForeignKey('chapters.id'))
+
+
+class SentiContent(db.Model):
+    __tablename__ = 'sentiContent'
+    id = db.Column(db.Integer, primary_key=True)
+
+    sentence = db.Column(db.Text)
+    senti = db.Column(db.String)
+    degree = db.Column(db.Float)
+
+    chapter_id = db.Column(db.Integer, db.ForeignKey('chapters.id'))
+
+    def to_json(self):
+        json_content = {
+            'sentence': self.sentence,
+            'senti': self.senti,
+            'degree': self.degree
+        }
+        return json_content
 
 
 class Alembic(db.Model):

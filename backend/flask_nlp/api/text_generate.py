@@ -42,7 +42,6 @@ def book_list(keyword):
 @api.route('/chapters/<int:book_id>', methods=['GET', 'POST'])
 def chapter_list(book_id):
     page = 1
-    # page = request.args.get('page', 1, type=int)
     chapters = Chapter.query.filter_by(book_id=book_id).all()
 
     if chapters:
