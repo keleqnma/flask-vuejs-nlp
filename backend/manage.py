@@ -7,7 +7,7 @@ from flask_nlp import create_app
 
 app = create_app(os.getenv('CONFIG') or 'default')
 manager = Manager(app)
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, render_as_batch=True)
 manager.add_command('db', MigrateCommand)
 
 

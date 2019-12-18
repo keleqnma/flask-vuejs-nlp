@@ -3,7 +3,7 @@ import json
 from flask.blueprints import Blueprint
 from flask import Flask, request, jsonify
 from ..models import *
-import pkuseg
+# import pkuseg
 import jiagu
 from .utils import post_dict, generate_wordcloud, ner_dict, divide_sentence
 from .text_generate import contentlist
@@ -11,91 +11,109 @@ from .text_generate import contentlist
 api = Blueprint('api_process', __name__)
 
 
+#分词结果
 @api.route('/segcontent/<int:chapter_id>')
 def contentseg(chapter_id):
-    wordsegs = WordSeg.query.filter_by(chapter_id=chapter_id).all()
-    if wordsegs:
-        return jsonify({'words': [word.wordseg for word in wordsegs]}), 200
+    contents_sentences = getContentSentence(chapter_id)
 
-    content = getContent(chapter_id)
-    wordsegs = pkuseg.pkuseg().cut(content)
+    if WordSeg.query.filter_by(
+            sentence_id=contents_sentences[0].id).all() == []:
+        #切割句子
+        for contents_sentence in contents_sentences:
+            #wordsegs = pkuseg.pkuseg().cut(contents_sentence.sentenceseg)
+            wordsegs = jiagu.seg(contents_sentence.sentenceseg)
+            for word in wordsegs:
+                wordseg = WordSeg(wordseg=word,
+                                  sentence_id=contents_sentence.id)
+                db.session.add(wordseg)
 
-    for word in wordsegs:
-        wordseg = WordSeg(wordseg=word, chapter_id=chapter_id)
-        db.session.add(wordseg)
-
-    return jsonify({'words': [word for word in wordsegs]}), 200
+    wordsegss = [[word.wordseg for word in contents_sentence.words]
+                 for contents_sentence in contents_sentences]
+    return jsonify({'words': wordsegss}), 200
 
 
+# 情感分析
 @api.route('/senticontent/<int:chapter_id>')
 def senticontent(chapter_id):
-    senticontents = SentiContent.query.filter_by(chapter_id=chapter_id).all()
-    if senticontents == []:
-        content = getContent(chapter_id)
-        contents_sentences = divide_sentence(content)
+    contents_sentences = SentenceSeg.query.filter_by(
+        chapter_id=chapter_id).all()
 
+    if contents_sentences == []:
+        contents_sentences = getContentSentence(chapter_id)
+
+    if SentiContent.query.filter_by(
+            sentence_id=contents_sentences[0].id).all() == []:
         for i, contents_sentence in enumerate(contents_sentences):
-            sentiment = jiagu.sentiment(contents_sentence)
-            senticontent = SentiContent(sentence=contents_sentences[i],
-                                        senti=sentiment[0],
+            sentiment = jiagu.sentiment(contents_sentence.sentenceseg)
+            senticontent = SentiContent(senti=sentiment[0],
                                         degree=sentiment[1],
-                                        chapter_id=chapter_id)
+                                        sentence_id=contents_sentence.id)
             db.session.add(senticontent)
 
-        senticontents = SentiContent.query.filter_by(
-            chapter_id=chapter_id).all()
+    senticontents = [{
+        'sentence': contents_sentence.sentenceseg,
+        'sentiment': senticontent.senti,
+        'degree': senticontent.degree
+    } for contents_sentence in contents_sentences
+                     for senticontent in contents_sentence.senti]
 
-    return jsonify({
-        'sentiments':
-        [senticontent.to_json() for senticontent in senticontents]
-    }), 200
-
-
-@api.route('/nercontent/<int:chapter_id>')
-def nercontent(chapter_id):
-    words = getContentSeg(chapter_id)
-    ners = jiagu.ner(words)  # 命名实体识别
-    return jsonify(
-        {'ners':
-         [[words[i], ner_dict[ner]] for i, ner in enumerate(ners)]}), 200
+    return jsonify({'sentiments': senticontents}), 200
 
 
 @api.route('/postagcontentseg/<int:chapter_id>')
 def contentpostagseg(chapter_id):
-    postwordsegs = PostWordSeg.query.filter_by(chapter_id=chapter_id).all()
-    if postwordsegs:
-        return jsonify(
-            {'words':
-             [[word.wordseg, word.postag] for word in postwordsegs]}), 200
+    wordsegss = getContentSeg(chapter_id)
 
-    content = getContent(chapter_id)
-    postwordsegs = pkuseg.pkuseg(postag=True).cut(content)
+    if PostWordSeg.query.filter_by(word_id=wordsegss[0][0].id).all() == []:
+        for wordsegs in wordsegss:
+            poss = jiagu.pos([wordseg.wordseg for wordseg in wordsegs])  # 词性标注
+            for i, pos in enumerate(poss):
+                wordseg = PostWordSeg(postag=post_dict[pos],
+                                      word_id=wordsegs[i].id)
+                db.session.add(wordseg)
 
-    for postwordseg in postwordsegs:
-        wordseg = PostWordSeg(wordseg=postwordseg[0],
-                              postag=post_dict[postwordseg[1]],
-                              chapter_id=chapter_id)
-        db.session.add(wordseg)
+    words = [[{
+        'word':
+        wordseg.wordseg,
+        'tag':
+        PostWordSeg.query.filter_by(word_id=wordseg.id).first().postag
+    } for wordseg in wordsegs] for wordsegs in wordsegss]
 
-    wordsegs = WordSeg.query.filter_by(chapter_id=chapter_id).all()
-    if wordsegs == []:
-        for postwordseg in postwordsegs:
-            wordseg = WordSeg(wordseg=postwordseg[0], chapter_id=chapter_id)
-            db.session.add(wordseg)
-
-    return jsonify(
-        {'words':
-         [[word[0], post_dict[word[1]]] for word in postwordsegs]}), 200
+    return jsonify({'words': words}), 200
 
 
 @api.route('/wordcloud/<int:chapter_id>')
 def wordcloud(chapter_id):
-    wordsegs = getContentSeg(chapter_id)
-    content = " ".join(wordsegs)
+    wordsegss = getContentSeg(chapter_id)
+    words = [wordseg.wordseg for wordsegs in wordsegss for wordseg in wordsegs]
+    content = " ".join(words)
 
     return generate_wordcloud(content)
 
 
+@api.route('/nercontent/<int:chapter_id>')
+def nercontent(chapter_id):
+    wordsegss = getContentSeg(chapter_id)
+
+    if NerWordSeg.query.filter_by(word_id=wordsegss[0][0].id).all() == []:
+        for wordsegs in wordsegss:
+            ners = jiagu.ner([wordseg.wordseg for wordseg in wordsegs])  # 词性标注
+            for i, ner in enumerate(ners):
+                wordseg = NerWordSeg(nertag=ner_dict[ner],
+                                     word_id=wordsegs[i].id)
+                db.session.add(wordseg)
+
+    words = [[{
+        'word':
+        wordseg.wordseg,
+        'tag':
+        NerWordSeg.query.filter_by(word_id=wordseg.id).first().nertag
+    } for wordseg in wordsegs] for wordsegs in wordsegss]
+
+    return jsonify({'words': words}), 200
+
+
+#获取内容
 def getContent(chapter_id):
     content = Content.query.filter_by(chapter_id=chapter_id).first()
     if content:
@@ -106,11 +124,33 @@ def getContent(chapter_id):
     return content
 
 
+#获取章节分词结果
 def getContentSeg(chapter_id):
-    wordsegs = WordSeg.query.filter_by(chapter_id=chapter_id).all()
-    if wordsegs == []:
-        contentseg(chapter_id)
-        wordsegs = WordSeg.query.filter_by(chapter_id=chapter_id).all()
+    contents_sentences = getContentSentence(chapter_id)
 
-    words = [word.wordseg for word in wordsegs]
-    return words
+    if WordSeg.query.filter_by(
+            sentence_id=contents_sentences[0].id).all() == []:
+        contentseg(chapter_id)
+
+    wordsegss = [[word for word in contents_sentence.words]
+                 for contents_sentence in contents_sentences]
+    return wordsegss
+
+
+#获取章节分句结果
+def getContentSentence(chapter_id):
+    contents_sentences = SentenceSeg.query.filter_by(
+        chapter_id=chapter_id).all()
+
+    if contents_sentences == []:
+        content = getContent(chapter_id)
+        contents_sentences = divide_sentence(content)
+
+        for contents_sentence in contents_sentences:
+            sentenceSeg = SentenceSeg(sentenceseg=contents_sentence,
+                                      chapter_id=chapter_id)
+            db.session.add(sentenceSeg)
+            contents_sentences = SentenceSeg.query.filter_by(
+                chapter_id=chapter_id).all()
+
+    return contents_sentences

@@ -53,7 +53,7 @@ export default {
   },
   methods: {
     goBack() {
-      this.$router.push({ path: "/ping" });
+      this.$router.push({ path: "/" });
     },
     getChapters(book_id) {
       const path = `http://localhost:5000/cpNlp/api/v1.0/chapters/${book_id}`;

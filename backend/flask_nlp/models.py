@@ -45,11 +45,9 @@ class Chapter(db.Model):
     chapter_url = db.Column(db.String, index=True)
 
     content = db.relationship('Content', backref='chapter', lazy='dynamic')
-    wordsegs = db.relationship('WordSeg', backref='chapter', lazy='dynamic')
-    postagsegs = db.relationship('PostWordSeg',
-                                 backref='chapter',
-                                 lazy='dynamic')
-
+    sentences = db.relationship('SentenceSeg',
+                                backref='chapter',
+                                lazy='dynamic')
     book_id = db.Column(db.Integer, db.ForeignKey('novels.id'))
 
     def to_json(self):
@@ -75,42 +73,58 @@ class Content(db.Model):
         return json_content
 
 
+#一个章节分很多句子
+class SentenceSeg(db.Model):
+    __tablename__ = 'sentencesegs'
+    id = db.Column(db.Integer, primary_key=True)
+
+    sentenceseg = db.Column(db.Text)
+
+    chapter_id = db.Column(db.Integer, db.ForeignKey('chapters.id'))
+
+    words = db.relationship("WordSeg", backref='sentence', lazy='dynamic')
+    senti = db.relationship("SentiContent", backref='sentence', lazy='dynamic')
+
+
+#一个句子分很多词
 class WordSeg(db.Model):
     __tablename__ = 'wordsegs'
     id = db.Column(db.Integer, primary_key=True)
 
     wordseg = db.Column(db.String)
 
-    chapter_id = db.Column(db.Integer, db.ForeignKey('chapters.id'))
+    sentence_id = db.Column(db.Integer, db.ForeignKey('sentencesegs.id'))
 
 
+#词性分词
 class PostWordSeg(db.Model):
     __tablename__ = 'postcontentsegs'
     id = db.Column(db.Integer, primary_key=True)
 
-    wordseg = db.Column(db.String)
     postag = db.Column(db.String)
 
-    chapter_id = db.Column(db.Integer, db.ForeignKey('chapters.id'))
+    word_id = db.Column(db.Integer, db.ForeignKey('wordsegs.id'))
 
 
+#ner分词
+class NerWordSeg(db.Model):
+    __tablename__ = 'nercontentsegs'
+    id = db.Column(db.Integer, primary_key=True)
+
+    nertag = db.Column(db.String)
+
+    word_id = db.Column(db.Integer, db.ForeignKey('wordsegs.id'))
+
+
+#情感判别
 class SentiContent(db.Model):
     __tablename__ = 'sentiContent'
     id = db.Column(db.Integer, primary_key=True)
 
-    sentence = db.Column(db.Text)
     senti = db.Column(db.String)
     degree = db.Column(db.Float)
 
-    chapter_id = db.Column(db.Integer, db.ForeignKey('chapters.id'))
-
-    def to_json(self):
-        json_content = {
-            'sentence': self.sentence,
-            'senti': self.senti,
-            'degree': self.degree
-        }
-        return json_content
+    sentence_id = db.Column(db.Integer, db.ForeignKey('sentencesegs.id'))
 
 
 class Alembic(db.Model):

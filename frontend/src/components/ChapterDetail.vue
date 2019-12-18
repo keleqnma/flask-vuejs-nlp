@@ -1,10 +1,7 @@
 
 <template>
   <div class="container">
-    <el-container
-      v-loading.fullscreen.lock="fullscreenLoading"
-      style="height: 700px; font-family: 微软雅黑;border: 1px solid #eee"
-    >
+    <el-container style="height: 700px; font-family: 微软雅黑;border: 1px solid #eee">
       <el-aside width="250px" :default-openeds="['1', '2','3','4','5']">
         <el-row class="tac">
           <el-menu
@@ -47,7 +44,7 @@
       </el-aside>
 
       <el-container>
-        <el-main>
+        <el-main v-loading="loading">
           <div class="wraper">
             <center>
               <el-button-group>
@@ -65,36 +62,54 @@
                 v-show="show == 2"
                 style="white-space: pre-line; line-height:40px; width:900px; "
               >
-                <span v-for="(word,index) in segcontent" :key="index">
-                  <span>{{word}}</span>
-                  <el-divider direction="vertical"></el-divider>
-                </span>
+                <div v-for="(words,index) in segcontent" :key="index">
+                  <span v-for="(word,index) in words" :key="index">
+                    <span style="display: inline-block;">{{word}}</span>
+                    <el-divider direction="vertical"></el-divider>
+                  </span>
+                  <el-divider></el-divider>
+                </div>
               </div>
 
               <div
                 v-show="show == 3"
                 style="white-space: pre-line; line-height:40px; width:900px; "
               >
-                <span v-for="(word_post,index) in post_segcontent" :key="index">
-                  <el-tooltip
-                    class="item"
-                    effect="dark"
-                    :content="word_post[1]"
-                    placement="top-start"
-                  >
-                    <el-button :type="getPostType(word_post[1])">{{word_post[0]}}</el-button>
-                  </el-tooltip>
-                </span>
+                <div v-for="(words,index) in post_segcontent" :key="index">
+                  <span v-for="(word,index) in words" :key="index">
+                    <span style="display: inline-block;">
+                      <el-tooltip
+                        class="item"
+                        effect="dark"
+                        :content="word.tag"
+                        placement="top-start"
+                      >
+                        <el-button :type="getPostType(word.tag)">{{word.word}}</el-button>
+                      </el-tooltip>
+                    </span>
+                  </span>
+                  <el-divider></el-divider>
+                </div>
               </div>
               <div
                 v-show="show == 4"
                 style="white-space: pre-line; line-height:40px; width:900px; "
               >
-                <span v-for="(word,index) in ner_content" :key="index">
-                  <el-tooltip class="item" effect="dark" :content="word[1]" placement="top-start">
-                    <el-button :type="getNerType(word[1])">{{word[0]}}</el-button>
-                  </el-tooltip>
-                </span>
+                <div v-for="(words,index) in ner_content" :key="index">
+                  <span v-for="(word,index) in words" :key="index">
+                    <span style="display: inline-block;">
+                      <el-tooltip
+                        class="item"
+                        effect="dark"
+                        :content="word.tag"
+                        placement="top-start"
+                      >
+                        <el-button :type="getNerType(word.tag)">{{word.word}}</el-button>
+                      </el-tooltip>
+                    </span>
+                  </span>
+                  <el-divider></el-divider>
+                </div>
               </div>
               <div
                 v-show="show == 5"
@@ -112,12 +127,20 @@
                 style="white-space: pre-line; line-height:40px; width:900px; "
               >
                 <span v-for="(content,index) in senti_content" :key="index">
-                  <div>
-                    <el-link type="info">{{content.sentence}}</el-link>
-                    <el-tag :type="content.senti=='negative'?'danger':'success'">{{content.senti}}</el-tag>
-                    <el-tag type="info">{{content.degree}}</el-tag>
-                    <el-divider></el-divider>
-                  </div>
+                  <el-row>
+                    <el-col :span="16">
+                      <el-link type="info">{{content.sentence}}</el-link>
+                    </el-col>
+                    <el-col :span="3">
+                      <el-tag
+                        :type="content.sentiment=='negative'?'danger':'success'"
+                      >{{content.sentiment}}</el-tag>
+                    </el-col>
+                    <el-col :span="5">
+                      <el-tag type="info">{{content.degree}}</el-tag>
+                    </el-col>
+                  </el-row>
+                  <el-divider></el-divider>
                 </span>
               </div>
             </center>
@@ -145,42 +168,42 @@ var map_ner = {
   无: "info"
 };
 var map_post = {
-  名词: "primary",
-  时间词: "primary",
-  处所词: "primary",
-  方位词: "primary",
+  普通名: "primary",
+  时间名: "primary",
+  方位名: "primary",
+  处所名: "primary",
+  人名: "success",
+  姓: "success",
+  名: "success",
+  地名: "success",
+  族名: "success",
+  机构名: "success",
+  其他专名: "success",
+  动词: "warning",
+  趋向动词: "warning",
+  联系动词: "warning",
+  能愿动词: "warning",
+  形容词: "warning",
+  区别词: "warning",
   数词: "info",
   量词: "info",
-  区别词: "info",
-  代词: "success",
-  动词: "warning",
-  形容词: "success",
-  状态词: "success",
-  副词: "success",
+  副词: "danger",
+  代词: "danger",
   介词: "info",
-  连词: "info",
-  助词: "info",
-  语气词: "info",
-  叹词: "info",
+  连词: "danger",
+  助词: "danger",
+  叹词: "danger",
   拟声词: "info",
-  成语: "success",
-  习惯用语: "info",
-  简称: "primary",
-  前接成分: "success",
-  后接成分: "success",
-  语素: "primary",
-  非语素字: "success",
+  习用语: "info",
+  缩略语: "info",
+  前接成分: "info",
+  后接成分: "info",
+  语素字: "danger",
+  非语素字: "info",
   标点符号: "info",
-  人名: "danger",
-  地名: "danger",
-  机构名称: "danger",
-  外文字符: "success",
-  其它专名: "danger",
-  副动词: "warning",
-  名动词: "warning",
-  形式动词: "warning",
-  副形词: "warning",
-  名形词: "warning"
+  非汉字字符串: "info",
+  其他未知的符号: "info",
+  未知: "info"
 };
 export default {
   name: "Ping",
@@ -197,7 +220,7 @@ export default {
       post_segcontent: [],
       ner_content: [],
       senti_content: [],
-      msg: ""
+      loading: true
     };
   },
   methods: {
@@ -209,7 +232,7 @@ export default {
     },
     clear() {
       this.chapter_id = this.img = this.content = "";
-      this.segcontent = this.post_segcontent = this.ner_content = [];
+      this.segcontent = this.post_segcontent = this.ner_content = this.senti_content = [];
     },
     jump(val) {
       console.log(val);
@@ -237,31 +260,30 @@ export default {
         axios
           .get(path)
           .then(res => {
-            this.ner_content = res.data.ners;
-            this.fullscreenLoading = false;
+            this.ner_content = res.data.words;
+            this.loading = false;
           })
           .catch(error => {
             // eslint-disable-next-line
             console.error(error);
           });
-      }
+      } else this.loading = false;
     },
     getContent(chapter_id) {
       if (this.content == "") {
         const path = `http://localhost:5000/cpNlp/api/v1.0/chaptercontent/${chapter_id}`;
 
-        this.fullscreenLoading = true;
         axios
           .get(path)
           .then(res => {
             this.content = res.data.content;
-            this.fullscreenLoading = false;
+            this.loading = false;
           })
           .catch(error => {
             // eslint-disable-next-line
             console.error(error);
           });
-      }
+      } else this.loading = false;
     },
     getContentSeg(chapter_id) {
       if (this.segcontent == "") {
@@ -270,30 +292,30 @@ export default {
         axios
           .get(path)
           .then(res => {
-            this.fullscreenLoading = false;
             this.segcontent = res.data.words;
+            this.loading = false;
           })
           .catch(error => {
             // eslint-disable-next-line
             console.error(error);
           });
-      }
+      } else this.loading = false;
     },
     getContentSenti(chapter_id) {
-      if (this.segcontent == "") {
+      if (this.senti_content == "") {
         const path = `http://localhost:5000/cpNlp/api/v1.0/process/senticontent/${chapter_id}`;
 
         axios
           .get(path)
           .then(res => {
-            this.fullscreenLoading = false;
             this.senti_content = res.data.sentiments;
+            this.loading = false;
           })
           .catch(error => {
             // eslint-disable-next-line
             console.error(error);
           });
-      }
+      } else this.loading = false;
     },
     getPostContentSeg(chapter_id) {
       if (this.post_segcontent == "") {
@@ -303,13 +325,13 @@ export default {
           .get(path)
           .then(res => {
             this.post_segcontent = res.data.words;
-            this.fullscreenLoading = false;
+            this.loading = false;
           })
           .catch(error => {
             // eslint-disable-next-line
             console.error(error);
           });
-      }
+      } else this.loading = false;
     },
     getWordCloud(chapter_id) {
       if (this.img == "") {
@@ -319,16 +341,16 @@ export default {
           .get(path)
           .then(res => {
             this.img = "data:image/jpeg;base64," + res.data;
-            this.fullscreenLoading = false;
+            this.loading = false;
           })
           .catch(error => {
             // eslint-disable-next-line
             console.error(error);
           });
-      }
+      } else this.loading = false;
     },
     handleSelect(key) {
-      this.fullscreenLoading = true;
+      this.loading = true;
       this.key = key;
 
       switch (key) {
@@ -372,11 +394,6 @@ export default {
 };
 </script>
 <style>
-.el-header {
-  background-color: #b3c0d1;
-  color: #333;
-  line-height: 60px;
-}
 .el-aside {
   color: #333;
 }

@@ -1,12 +1,19 @@
 # coding=utf-8
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-
+from sqlalchemy import MetaData
 from flask_nlp.config import config
 from flask_cors import CORS
 
-#初始化数据库对象
-db = SQLAlchemy()
+naming_convention = {
+    "ix": 'ix_%(column_0_label)s',
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    "ck": "ck_%(table_name)s_%(column_0_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s"
+}
+
+db = SQLAlchemy(metadata=MetaData(naming_convention=naming_convention))
 
 
 def create_app(config_name):
@@ -17,6 +24,7 @@ def create_app(config_name):
     # 我们使用app.config对象提供的from_object()方法导入配置
     app.config.from_object(config[config_name])
     # 注册数据库实例
+
     db.init_app(app)
     # 构造蓝本
 
