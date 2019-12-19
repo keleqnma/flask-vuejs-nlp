@@ -74,6 +74,10 @@ def divide_sentence(content):
 
 
 def add_novel(data, keyword):
+    novels = Novel.query.filter_by(book_url=data['url']).all()
+    for novel in novels:
+        db.session.delete(novel)
+
     novel = Novel(book_name=data['title'],
                   book_url=data['url'],
                   book_img=data['image'],
@@ -82,6 +86,7 @@ def add_novel(data, keyword):
                   profile=data['profile'],
                   last_update=data['time'],
                   keyword=keyword)
+
     db.session.add(novel)
 
 
@@ -108,6 +113,7 @@ def generate_wordcloud(content):
         background_color="white",
         stopwords=stopwords,
         contour_width=3,
+        max_words=2000,
         contour_color='steelblue',
         font_path=
         "D:/cyq/Desktop/Junior.1/大数据技术与应用/2017213157-陈玉琪-大作业/flask-vuejs-nlp/backend/flask_nlp/static/simsun.ttf"

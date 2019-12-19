@@ -35,11 +35,7 @@ def contentseg(chapter_id):
 # 情感分析
 @api.route('/senticontent/<int:chapter_id>')
 def senticontent(chapter_id):
-    contents_sentences = SentenceSeg.query.filter_by(
-        chapter_id=chapter_id).all()
-
-    if contents_sentences == []:
-        contents_sentences = getContentSentence(chapter_id)
+    contents_sentences = getContentSentence(chapter_id)
 
     if SentiContent.query.filter_by(
             sentence_id=contents_sentences[0].id).all() == []:
@@ -72,14 +68,12 @@ def contentpostagseg(chapter_id):
                                       word_id=wordsegs[i].id)
                 db.session.add(wordseg)
 
-    words = [[{
-        'word':
-        wordseg.wordseg,
-        'tag':
+    tags = [[
         PostWordSeg.query.filter_by(word_id=wordseg.id).first().postag
-    } for wordseg in wordsegs] for wordsegs in wordsegss]
+        for wordseg in wordsegs
+    ] for wordsegs in wordsegss]
 
-    return jsonify({'words': words}), 200
+    return jsonify({'tags': tags}), 200
 
 
 @api.route('/wordcloud/<int:chapter_id>')
@@ -103,14 +97,12 @@ def nercontent(chapter_id):
                                      word_id=wordsegs[i].id)
                 db.session.add(wordseg)
 
-    words = [[{
-        'word':
-        wordseg.wordseg,
-        'tag':
+    ners = [[
         NerWordSeg.query.filter_by(word_id=wordseg.id).first().nertag
-    } for wordseg in wordsegs] for wordsegs in wordsegss]
+        for wordseg in wordsegs
+    ] for wordsegs in wordsegss]
 
-    return jsonify({'words': words}), 200
+    return jsonify({'ners': ners}), 200
 
 
 #获取内容

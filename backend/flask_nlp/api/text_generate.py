@@ -9,6 +9,7 @@ from flask_nlp import db
 from ..spider.spider import CpSpider
 
 api = Blueprint('api', __name__)
+spider = CpSpider()
 
 
 #随机抽取十本小说放在首页
@@ -31,7 +32,6 @@ def book_list(keyword):
     if books:
         return jsonify({'books': [book.to_json() for book in books]}), 200
 
-    spider = CpSpider()
     for data in spider.get_index_result(keyword, page=0):
         add_novel(data, keyword)
 
@@ -41,21 +41,15 @@ def book_list(keyword):
 
 @api.route('/chapters/<int:book_id>', methods=['GET', 'POST'])
 def chapter_list(book_id):
-    page = 1
     chapters = Chapter.query.filter_by(book_id=book_id).all()
 
-    if chapters:
-        return jsonify(
-            {'chapters': [chapter.to_json() for chapter in chapters]}), 200
+    if chapters == []:
 
-    spider = CpSpider()
+        book = Novel.query.filter_by(id=book_id).first()
+        for data in spider.get_chapter(book.book_url):
+            add_chapter(data, book_id)
 
-    book = Novel.query.filter_by(id=book_id).first()
-    print(book)
-    for data in spider.get_chapter(book.book_url):
-        add_chapter(data, book_id)
-
-    chapters = Chapter.query.filter_by(book_id=book_id).all()
+        chapters = Chapter.query.filter_by(book_id=book_id).all()
 
     return jsonify({'chapters':
                     [chapter.to_json() for chapter in chapters]}), 200
@@ -67,7 +61,6 @@ def contentlist(chapter_id):
     if content:
         return jsonify(content.to_json()), 200
 
-    spider = CpSpider()
     chapter = Chapter.query.filter_by(id=chapter_id).first()
     content = Content(content=spider.get_content(chapter.chapter_url),
                       chapter_id=chapter_id)

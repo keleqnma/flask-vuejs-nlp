@@ -33,7 +33,8 @@ class CpSpider(object):
         try:
             self.browser.get(url)
             # 需要等一下，直到页面加载完成
-            wait = WebDriverWait(self.browser, 10)
+            # 超时时间10s,每0.2秒检查一次
+            wait = WebDriverWait(self.browser, 10, 0.2)
             wait.until(EC.presence_of_element_located((By.ID, 'vueBox')))
         except ConnectionError:
             print('Error.')
@@ -85,10 +86,13 @@ class CpSpider(object):
         urls = self.browser.find_elements_by_xpath(
             '//*[@id="vueBox"]/div[1]/div[3]/div[2]/div[3]/ul/li/a')
         for chapter_url, chapter in zip(urls, chapters):
-            data = {
-                'url': chapter_url.get_attribute('href'),
-                'chapter': chapter.text
-            }
+            url = chapter_url.get_attribute('href')
+            if url != 'javascript:;':
+                chapter_text = chapter.text
+            else:
+                chapter_text = '章节已锁定'
+
+            data = {'url': url, 'chapter': chapter_text}
             yield data
 
     # 章节内容页数据

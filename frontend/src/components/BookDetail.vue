@@ -86,13 +86,25 @@ export default {
         });
     },
     showdetail(chapter) {
-      this.$router.push({
-        path: "/chapters",
-        query: {
-          chapter_id: chapter.id,
-          book_id: this.book_id
-        }
-      });
+      if (chapter.chapter_name != "章节已锁定") {
+        this.$router.push({
+          path: "/chapters",
+          query: {
+            chapter_id: chapter.id,
+            book_id: this.book_id
+          }
+        });
+      } else {
+        this.$alert("该内容已被锁定或冻结，暂时无法查看哦！", "提示", {
+          confirmButtonText: "确定",
+          callback: action => {
+            this.$message({
+              type: "info",
+              message: `action: ${action}`
+            });
+          }
+        });
+      }
     }
   },
   created() {

@@ -75,16 +75,11 @@
                 v-show="show == 3"
                 style="white-space: pre-line; line-height:40px; width:900px; "
               >
-                <div v-for="(words,index) in post_segcontent" :key="index">
-                  <span v-for="(word,index) in words" :key="index">
+                <div v-for="(tags,index1) in post_segcontent" :key="index1">
+                  <span v-for="(tag,index2) in tags" :key="index2">
                     <span style="display: inline-block;">
-                      <el-tooltip
-                        class="item"
-                        effect="dark"
-                        :content="word.tag"
-                        placement="top-start"
-                      >
-                        <el-button :type="getPostType(word.tag)">{{word.word}}</el-button>
+                      <el-tooltip class="item" effect="dark" :content="tag" placement="top-start">
+                        <el-button :type="getPostType(tag)">{{segcontent[index1][index2]}}</el-button>
                       </el-tooltip>
                     </span>
                   </span>
@@ -95,16 +90,11 @@
                 v-show="show == 4"
                 style="white-space: pre-line; line-height:40px; width:900px; "
               >
-                <div v-for="(words,index) in ner_content" :key="index">
-                  <span v-for="(word,index) in words" :key="index">
+                <div v-for="(ners,index1) in ner_content" :key="index1">
+                  <span v-for="(ner,index2) in ners" :key="index2">
                     <span style="display: inline-block;">
-                      <el-tooltip
-                        class="item"
-                        effect="dark"
-                        :content="word.tag"
-                        placement="top-start"
-                      >
-                        <el-button :type="getNerType(word.tag)">{{word.word}}</el-button>
+                      <el-tooltip class="item" effect="dark" :content="ner" placement="top-start">
+                        <el-button :type="getNerType(ner)">{{segcontent[index1][index2]}}</el-button>
                       </el-tooltip>
                     </span>
                   </span>
@@ -183,12 +173,12 @@ var map_post = {
   趋向动词: "warning",
   联系动词: "warning",
   能愿动词: "warning",
-  形容词: "warning",
-  区别词: "warning",
+  形容词: "info",
+  区别词: "info",
   数词: "info",
   量词: "info",
   副词: "danger",
-  代词: "danger",
+  代词: "success",
   介词: "info",
   连词: "danger",
   助词: "danger",
@@ -256,11 +246,14 @@ export default {
     },
     getner(chapter_id) {
       if (this.ner_content == "") {
+        this.getContentSeg(chapter_id);
+
         const path = `http://localhost:5000/cpNlp/api/v1.0/process/nercontent/${chapter_id}`;
+        this.loading = true;
         axios
           .get(path)
           .then(res => {
-            this.ner_content = res.data.words;
+            this.ner_content = res.data.ners;
             this.loading = false;
           })
           .catch(error => {
@@ -319,12 +312,14 @@ export default {
     },
     getPostContentSeg(chapter_id) {
       if (this.post_segcontent == "") {
-        const path = `http://localhost:5000/cpNlp/api/v1.0/process/postagcontentseg/${chapter_id}`;
+        this.getContentSeg(chapter_id);
 
+        const path = `http://localhost:5000/cpNlp/api/v1.0/process/postagcontentseg/${chapter_id}`;
+        this.loading = true;
         axios
           .get(path)
           .then(res => {
-            this.post_segcontent = res.data.words;
+            this.post_segcontent = res.data.tags;
             this.loading = false;
           })
           .catch(error => {
