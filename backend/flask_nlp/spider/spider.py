@@ -1,14 +1,19 @@
 # coding=utf-8
 #动态加载数据处理
 from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+import os, time
 
 chrome_options = Options()
 chrome_options.add_argument('--headless')
 chrome_options.add_argument('--disable-gpu')
+#driver_path = '../backend/flask_nlp/static/chromedriver.exe'
+#driver_path = os.path.abspath(driver_path)
+#driver_path = driver_path.replace('\\', '/')
 """
 爬虫api：
     搜索结果页：get_index_result(search)
@@ -19,15 +24,20 @@ chrome_options.add_argument('--disable-gpu')
 
 class CpSpider(object):
     def __init__(self):
+        #time.sleep(5)
         self.search_url = 'https://www.gongzicp.com/novel/search/module/novel/keyword/'
         self.base_url = 'https://www.gongzicp.com/'
         self.headers = {
             'User-Agent':
             'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0'
         }
-        self.browser = webdriver.Chrome(
-            executable_path='D:\programs\chromedriver.exe',
-            options=chrome_options)
+        # 本地driver运行：
+        # self.browser = webdriver.Chrome(executable_path=driver_path,
+        #                                options=chrome_options)
+        # docker运行
+        self.browser = webdriver.Remote(
+            command_executor="http://127.0.0.1:4444/wd/hub",
+            desired_capabilities=DesiredCapabilities.CHROME)
 
     def parse_url(self, url):
         try:

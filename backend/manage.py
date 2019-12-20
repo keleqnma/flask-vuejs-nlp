@@ -13,9 +13,9 @@ manager.add_command('db', MigrateCommand)
 
 @manager.command
 def deploy():
-
-    from flask_migrate import upgrade
     '''
+    from flask_migrate import upgrade
+    
     # 情况数据库的操作只在运行过后才可以取消注释使用
     from flask_nlp.models import Search, Novel, Chapter, Article
     #
@@ -32,8 +32,9 @@ def deploy():
     articles = Article.query.all()
     for a in articles:
         db.session.delete(a)
-    '''
+   
     db.session.commit()
+     '''
 
     from flask_nlp.models import Alembic
     Alembic.clear_A()

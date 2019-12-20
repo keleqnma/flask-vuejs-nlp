@@ -5,6 +5,7 @@ from wordcloud import WordCloud, STOPWORDS
 import base64
 from io import BytesIO
 import re
+import os
 
 JSON_MIME_TYPE = 'application/json'
 ner_dict = {
@@ -107,17 +108,19 @@ def json_response(data='', status=200, headers=None):
 
 def generate_wordcloud(content):
     stopwords = set(STOPWORDS)
-    wordcloud = WordCloud(
-        scale=3.5,
-        max_font_size=100,
-        background_color="white",
-        stopwords=stopwords,
-        contour_width=3,
-        max_words=2000,
-        contour_color='steelblue',
-        font_path=
-        "D:/cyq/Desktop/Junior.1/大数据技术与应用/2017213157-陈玉琪-大作业/flask-vuejs-nlp/backend/flask_nlp/static/simsun.ttf"
-    ).generate(content)
+    font_path = '../backend/flask_nlp/static/simsun.ttf'
+    font_path = os.path.abspath(font_path)
+    font_path = font_path.replace('\\', '/')
+    
+
+    wordcloud = WordCloud(scale=3.5,
+                          max_font_size=100,
+                          background_color="white",
+                          stopwords=stopwords,
+                          contour_width=3,
+                          max_words=2000,
+                          contour_color='steelblue',
+                          font_path=font_path).generate(content)
     image = wordcloud.to_image()
 
     output_buffer = BytesIO()
@@ -125,3 +128,4 @@ def generate_wordcloud(content):
     byte_data = output_buffer.getvalue()
     base64_str = base64.b64encode(byte_data)
     return base64_str
+

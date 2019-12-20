@@ -1,0 +1,29 @@
+version: "2.0"
+services:
+  #后端，爬虫+api  
+  backend:
+    image: flask-vuejs-nlp_backend
+    #build: ./backend
+    depends_on:
+      - chrome
+    ports:
+      - "5000:5000"
+    links:
+       - chrome
+      
+  #前端    
+  frontend:
+    image: vuenginxcontainer
+    # build:    ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    links:
+      - backend
+  #chrome驱动
+  chrome:
+    image: selenium/standalone-chrome:latest
+    ports:
+      - "4444:4444"
+    

@@ -2,8 +2,8 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
-from flask_nlp.config import config
 from flask_cors import CORS
+from flask_nlp.config import config
 
 naming_convention = {
     "ix": 'ix_%(column_0_label)s',
