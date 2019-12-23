@@ -47,10 +47,12 @@
         <el-main v-loading="loading">
           <div class="wraper">
             <center>
-              <el-button-group>
-                <el-button type="info" icon="el-icon-back" circle @click="jump(-1)"></el-button>
-                <el-button type="info" icon="el-icon-right" circle @click="jump(1)"></el-button>
-              </el-button-group>
+              <el-row>
+                <el-button-group>
+                  <el-button type="info" icon="el-icon-back" circle @click="jump(-1)"></el-button>
+                  <el-button type="info" icon="el-icon-right" circle @click="jump(1)"></el-button>
+                </el-button-group>
+              </el-row>
 
               <el-backtop target=".wraper"></el-backtop>
               <div
@@ -105,12 +107,19 @@
                 v-show="show == 5"
                 style="white-space: pre-line; line-height:40px; width:900px; "
               >
-                <el-image :src="img" fit="fill">
-                  <div slot="placeholder" class="image-slot">
-                    加载中
-                    <span class="dot">...</span>
-                  </div>
-                </el-image>
+                <el-row>
+                  <el-button type="primary" round @click="getWordCloud(color=1)">蓝青配</el-button>
+                  <el-button type="danger" round @click="getWordCloud(color=2)">红白配</el-button>
+                  <el-button type="success" round @click="getWordCloud(color=3)">绿白配</el-button>
+                  <el-button round @click="getWordCloud(color=4)">随机白</el-button>
+                  <el-button type="info" round @click="getWordCloud(color=5)">随机黑</el-button>
+                </el-row>
+                <canvas
+                  id="canvas"
+                  width="1500px"
+                  height="1200px"
+                  style="width:900px;height:600px;"
+                ></canvas>
               </div>
               <div
                 v-show="show == 6"
@@ -143,6 +152,9 @@
 
 <script>
 import axios from "axios";
+import WordCloud from "wordcloud";
+import $ from "jquery";
+var words = new Array();
 var Choose = {
   ORIGIN: 1,
   SEGMENT: 2,
@@ -200,8 +212,9 @@ export default {
   inject: ["routerRefresh"],
   data() {
     return {
+      base_url: "http://backend:5000/cpNlp/api/v1.0/",
       key: "2",
-      img: "",
+      wordFreqs: [],
       show: Choose.ORIGIN,
       book_id: "",
       chapter_id: "",
@@ -244,11 +257,16 @@ export default {
       console.log("hi" + this.chapter_id);
       this.handleSelect(this.key);
     },
-    getner(chapter_id) {
+    getner(chapter_id = this.chapter_id) {
       if (this.ner_content == "") {
-        this.getContentSeg(chapter_id);
+        if (this.segcontent == "") {
+          const path = this.base_url + `process/segcontent/${chapter_id}`;
 
-        const path = `http://localhost:5000/cpNlp/api/v1.0/process/nercontent/${chapter_id}`;
+          axios.get(path).then(res => {
+            this.segcontent = res.data.words;
+          });
+        }
+        const path = this.base_url + `process/nercontent/${chapter_id}`;
         this.loading = true;
         axios
           .get(path)
@@ -262,9 +280,9 @@ export default {
           });
       } else this.loading = false;
     },
-    getContent(chapter_id) {
+    getContent(chapter_id = this.chapter_id) {
       if (this.content == "") {
-        const path = `http://localhost:5000/cpNlp/api/v1.0/chaptercontent/${chapter_id}`;
+        const path = this.base_url + `chaptercontent/${chapter_id}`;
 
         axios
           .get(path)
@@ -278,9 +296,9 @@ export default {
           });
       } else this.loading = false;
     },
-    getContentSeg(chapter_id) {
+    getContentSeg(chapter_id = this.chapter_id) {
       if (this.segcontent == "") {
-        const path = `http://localhost:5000/cpNlp/api/v1.0/process/segcontent/${chapter_id}`;
+        const path = this.base_url + `process/segcontent/${chapter_id}`;
 
         axios
           .get(path)
@@ -294,9 +312,9 @@ export default {
           });
       } else this.loading = false;
     },
-    getContentSenti(chapter_id) {
+    getContentSenti(chapter_id = this.chapter_id) {
       if (this.senti_content == "") {
-        const path = `http://localhost:5000/cpNlp/api/v1.0/process/senticontent/${chapter_id}`;
+        const path = this.base_url + `process/senticontent/${chapter_id}`;
 
         axios
           .get(path)
@@ -310,11 +328,17 @@ export default {
           });
       } else this.loading = false;
     },
-    getPostContentSeg(chapter_id) {
+    getPostContentSeg(chapter_id = this.chapter_id) {
       if (this.post_segcontent == "") {
-        this.getContentSeg(chapter_id);
+        if (this.segcontent == "") {
+          const path = this.base_url + `process/segcontent/${chapter_id}`;
 
-        const path = `http://localhost:5000/cpNlp/api/v1.0/process/postagcontentseg/${chapter_id}`;
+          axios.get(path).then(res => {
+            this.segcontent = res.data.words;
+          });
+        }
+
+        const path = this.base_url + `process/postagcontentseg/${chapter_id}`;
         this.loading = true;
         axios
           .get(path)
@@ -328,21 +352,82 @@ export default {
           });
       } else this.loading = false;
     },
-    getWordCloud(chapter_id) {
-      if (this.img == "") {
-        const path = `http://localhost:5000/cpNlp/api/v1.0/process/wordcloud/${chapter_id}`;
+    getImages(color) {
+      var wordFreqs = this.wordFreqs;
+      var background_color = "";
+      var plain_color = "";
+      var important_color = "";
+      var color_var = "";
+      switch (color) {
+        case 1:
+          background_color = "#e9eef3";
+          plain_color = "#b3c0d1";
+          important_color = "#116de6";
+          break;
+        case 2:
+          background_color = "#ffe0e0";
+          plain_color = "#c09292";
+          important_color = "#f02222";
+          break;
+        case 3:
+          background_color = "#E2FAE7";
+          plain_color = "#82A088";
+          important_color = "#63D0A4";
+          break;
+        case 4:
+          background_color = "#e9eef3";
+          color_var = "random-dark";
+          break;
+        case 5:
+          background_color = "#2D365B";
+          color_var = "random-light";
+          break;
+      }
+      var max_3_freq = wordFreqs[2].count;
+      var canvas = document.getElementById("canvas");
+      var color_func = function(word, weight) {
+        return weight >= max_3_freq ? important_color : plain_color;
+      };
+
+      var options = eval({
+        list: words,
+        gridSize: Math.round((16 * $("#canvas").width()) / 1024), // 密集程度 数字越小越密集
+        weightFactor: function(size) {
+          return (Math.pow(size, 0.7) * $("#canvas").width()) / 32;
+        }, // 字体大小=原始大小*weightFactor
+        maxFontSize: 100, //最大字号
+        minFontSize: 30, //最小字号
+        rotationSteps: 2,
+        fontWeight: "normal", //字体粗细
+        fontFamily: "Times, serif", // 字体
+        color: color >= 4 ? color_var : color_func, // 字体颜色 'random-dark' 或者 'random-light'
+        backgroundColor: background_color, // 背景颜色
+        rotateRatio: 0.5 // 字体倾斜(旋转)概率，1代表总是倾斜(旋转)
+      });
+      //生成
+      WordCloud(canvas, options);
+      this.loading = false;
+    },
+    getWordCloud(color, chapter_id = this.chapter_id) {
+      console.log("color" + color);
+      if (this.wordFreqs.length == 0) {
+        const path = this.base_url + `process/wordcloud/${chapter_id}`;
         console.log(path);
         axios
           .get(path)
           .then(res => {
-            this.img = "data:image/jpeg;base64," + res.data;
-            this.loading = false;
+            this.wordFreqs = res.data;
+            var wordFreqs = this.wordFreqs;
+            for (var i = 0; i < wordFreqs.length; i++) {
+              var option = [wordFreqs[i].word, wordFreqs[i].count];
+              words.push(option);
+            }
+            this.getImages(color);
           })
           .catch(error => {
-            // eslint-disable-next-line
             console.error(error);
           });
-      } else this.loading = false;
+      } else this.getImages(color);
     },
     handleSelect(key) {
       this.loading = true;
@@ -373,7 +458,7 @@ export default {
           break;
         case "5":
           this.show = Choose.WORD_CLOUD;
-          this.getWordCloud(this.chapter_id);
+          this.getWordCloud(1);
           break;
         case "6":
           this.show = Choose.SENTIMENT;

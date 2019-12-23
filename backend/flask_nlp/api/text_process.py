@@ -5,7 +5,8 @@ from flask import Flask, request, jsonify
 from ..models import *
 # import pkuseg
 import jiagu
-from .utils import post_dict, generate_wordcloud, ner_dict, divide_sentence
+from .utils.function import divide_sentence
+from .utils.variable import post_dict, ner_dict, stop_words
 from .text_generate import contentlist
 
 api = Blueprint('api_process', __name__)
@@ -80,9 +81,19 @@ def contentpostagseg(chapter_id):
 def wordcloud(chapter_id):
     wordsegss = getContentSeg(chapter_id)
     words = [wordseg.wordseg for wordsegs in wordsegss for wordseg in wordsegs]
-    content = " ".join(words)
+    words_set = set(words)
+    res = []
+    for word in words_set:
+        if word not in stop_words:
+            count = words.count(word)
+            res.append({'word': word, 'count': count})
 
-    return generate_wordcloud(content)
+    res.sort(key=lambda x: x['count'], reverse=True)
+    # 排序 做到词频高的在中间
+    # 只取前两千个词
+    if len(res) > 2000:
+        res = res[0:2000]
+    return jsonify(res), 200
 
 
 @api.route('/nercontent/<int:chapter_id>')

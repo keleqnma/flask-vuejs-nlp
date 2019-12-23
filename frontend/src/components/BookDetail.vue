@@ -45,6 +45,7 @@ export default {
   data() {
     return {
       book_id: "",
+      base_url: "http://backend:5000/cpNlp/api/v1.0/",
       book_information: {},
       chapters: [],
       keyword: "",
@@ -56,7 +57,7 @@ export default {
       this.$router.push({ path: "/" });
     },
     getChapters(book_id) {
-      const path = `http://localhost:5000/cpNlp/api/v1.0/chapters/${book_id}`;
+      const path = this.base_url + `chapters/${book_id}`;
       axios
         .get(path)
         .then(res => {
@@ -70,7 +71,7 @@ export default {
         });
     },
     getBookInformantion(book_id) {
-      const path = `http://localhost:5000/cpNlp/api/v1.0/books/${book_id}`;
+      const path = this.base_url + `books/${book_id}`;
       console.log(path);
       axios
         .get(path)

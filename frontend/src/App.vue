@@ -5,29 +5,31 @@
         color: #333;
         line-height: 60px; font-family: Helvetica;height: 60px;"
     >
-      <svg
-        t="1576742653217"
-        class="icon"
-        viewBox="0 0 1024 1024"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        p-id="8289"
-        width="40"
-        height="40"
-        style="width: 40px; height: 40px; margin:0 10px;margin-top: 10px;"
-      >
-        <path
-          d="M992 192h-128l-14.32-28.62A64 64 0 0 0 792.44 128H685.2l-54.56-54.56C610.46 53.28 576 67.56 576 96.06v299.68l256 91.42V416h64c70.7 0 128-57.3 128-128v-64c0-17.68-14.32-32-32-32z m-224 96c-17.68 0-32-14.32-32-32s14.32-32 32-32 32 14.32 32 32-14.32 32-32 32zM192 448c-35.28 0-64-28.72-64-64 0-35.34-28.66-64-64-64S0 348.66 0 384c0 83.32 53.66 153.7 128 180.2V992c0 17.68 14.32 32 32 32h128c17.68 0 32-14.32 32-32V768h320v224c0 17.68 14.32 32 32 32h128c17.68 0 32-14.32 32-32V555.1L532.1 448H192z"
-          p-id="8290"
-          fill="#ffffff"
-        />
-      </svg>
-      <font
-        style="height: 40px; margin:0 10px;margin-top: 10px;"
-        face="微软雅黑"
-        color="#fff"
-        size="6"
-      >可 可 文 学</font>
+      <a href="/">
+        <svg
+          t="1576742653217"
+          class="icon"
+          viewBox="0 0 1024 1024"
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          p-id="8289"
+          width="40"
+          height="40"
+          style="width: 40px; height: 40px; margin:0 10px;margin-top: 10px;"
+        >
+          <path
+            d="M992 192h-128l-14.32-28.62A64 64 0 0 0 792.44 128H685.2l-54.56-54.56C610.46 53.28 576 67.56 576 96.06v299.68l256 91.42V416h64c70.7 0 128-57.3 128-128v-64c0-17.68-14.32-32-32-32z m-224 96c-17.68 0-32-14.32-32-32s14.32-32 32-32 32 14.32 32 32-14.32 32-32 32zM192 448c-35.28 0-64-28.72-64-64 0-35.34-28.66-64-64-64S0 348.66 0 384c0 83.32 53.66 153.7 128 180.2V992c0 17.68 14.32 32 32 32h128c17.68 0 32-14.32 32-32V768h320v224c0 17.68 14.32 32 32 32h128c17.68 0 32-14.32 32-32V555.1L532.1 448H192z"
+            p-id="8290"
+            fill="#ffffff"
+          />
+        </svg>
+        <font
+          style="height: 40px; margin:0 10px;margin-top: 10px;"
+          face="微软雅黑"
+          color="#fff"
+          size="6"
+        >可 可 文 学</font>
+      </a>
       <a
         href="https://github.com/keleqnma/flask-vuejs-nlp"
         class="github-corner"
@@ -67,12 +69,14 @@
 export default {
   data() {
     return {
+      base_url: "http://backend:5000/cpNlp/api/v1.0/",
       routerAlive: true
     };
   },
   provide() {
     //在父组件中创建属性
     return {
+      base_url: this.base_url,
       routerRefresh: this.routerRefresh
     };
   },

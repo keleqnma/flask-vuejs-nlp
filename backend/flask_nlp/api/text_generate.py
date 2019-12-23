@@ -3,12 +3,13 @@ import json
 import random
 from flask.blueprints import Blueprint
 from flask import Flask, request, jsonify
-from .utils import add_novel, add_chapter
+from .utils.function import add_novel, add_chapter
 from ..models import *
 from flask_nlp import db
 from ..spider.spider import CpSpider
 
 api = Blueprint('api', __name__)
+
 spider = CpSpider()
 
 

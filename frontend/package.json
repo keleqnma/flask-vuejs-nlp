@@ -13,9 +13,11 @@
     "bootstrap-vue": "^2.0.0-rc.19",
     "core-js": "^2.6.5",
     "element-ui": "^2.13.0",
+    "jquery": "^3.4.1",
     "less-loader": "^5.0.0",
     "vue": "^2.6.10",
-    "vue-router": "^3.0.3"
+    "vue-router": "^3.0.3",
+    "wordcloud": "^1.1.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.7.0",
