@@ -212,7 +212,7 @@ export default {
   inject: ["routerRefresh"],
   data() {
     return {
-      base_url: "http://backend:5000/cpNlp/api/v1.0/",
+      base_url: "http://localhost:5000/cpNlp/api/v1.0/",
       key: "2",
       wordFreqs: [],
       show: Choose.ORIGIN,

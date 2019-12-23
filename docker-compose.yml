@@ -15,7 +15,7 @@ services:
       
   #前端    
   frontend:
-    # image: vuenginxcontainer
+    #image: vuenginxcontainer
     build:  ./frontend
     ports:
       - "3000:80"

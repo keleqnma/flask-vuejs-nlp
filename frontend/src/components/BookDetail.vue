@@ -45,7 +45,7 @@ export default {
   data() {
     return {
       book_id: "",
-      base_url: "http://backend:5000/cpNlp/api/v1.0/",
+      base_url: "http://localhost:5000/cpNlp/api/v1.0/",
       book_information: {},
       chapters: [],
       keyword: "",

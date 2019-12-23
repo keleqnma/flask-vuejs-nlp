@@ -86,7 +86,7 @@ export default {
     return {
       fullscreenLoading: false,
       books: [],
-      base_url: "http://backend:5000/cpNlp/api/v1.0/",
+      base_url: "http://localhost:5000/cpNlp/api/v1.0/",
       keyword: "",
       msg: ""
     };
