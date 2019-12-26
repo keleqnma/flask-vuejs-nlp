@@ -1,15 +1,26 @@
 version: "3.7"
 services:
   #后端，爬虫+api  
-
   backend:
-    #image: flask-vuejs-nlp_backend
+    image: flask-vuejs-nlp_backend
     build: ./backend
     hostname: backend
     depends_on:
       - chrome
     ports:
       - "5000:5000"
+    links:
+      - chrome
+
+  #后端备份，爬虫+api  
+  backend_backup:
+    image: flask-vuejs-nlp_backend
+    build: ./backend
+    hostname: backend_backup
+    depends_on:
+      - chrome
+    ports:
+      - "6000:5000"
     links:
       - chrome
   
@@ -22,8 +33,10 @@ services:
       - "3000:80"
     depends_on:
       - backend
+      - backend_backup
     links:
       - backend
+      - backend_backup
     volumes:
       - type: bind
         source: ./frontend/nginx
