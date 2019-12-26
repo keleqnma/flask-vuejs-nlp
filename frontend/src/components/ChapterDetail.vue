@@ -223,6 +223,7 @@ export default {
       post_segcontent: [],
       ner_content: [],
       senti_content: [],
+      chapters: [],
       loading: true
     };
   },
@@ -234,19 +235,45 @@ export default {
       return map_ner[type];
     },
     clear() {
-      this.chapter_id = this.img = this.content = "";
-      this.segcontent = this.post_segcontent = this.ner_content = this.senti_content = [];
+      this.chapter_id = this.content = "";
+      this.wordFreqs = this.segcontent = this.post_segcontent = this.ner_content = this.senti_content = [];
     },
     jump(val) {
       console.log(val);
-
-      this.$router.push({
-        path: "/chapters",
-        query: {
-          chapter_id: Number(this.chapter_id) + Number(val),
-          book_id: this.book_id
-        }
+      console.log("next chapter");
+      var next_chapter_id = Number(this.chapter_id) + Number(val);
+      var next_chapter = this.chapters.filter(function(e) {
+        return e.id == next_chapter_id;
       });
+      if (next_chapter.length == 0) {
+        this.$alert("没了", "提示", {
+          confirmButtonText: "确定",
+          callback: action => {
+            this.$message({
+              type: "info",
+              message: `action: ${action}`
+            });
+          }
+        });
+      } else if (next_chapter[0].chapter_name == "章节已锁定") {
+        this.$alert("该内容已被锁定或冻结，暂时无法查看哦！", "提示", {
+          confirmButtonText: "确定",
+          callback: action => {
+            this.$message({
+              type: "info",
+              message: `action: ${action}`
+            });
+          }
+        });
+      } else {
+        this.$router.push({
+          path: "/chapters",
+          query: {
+            chapter_id: next_chapter_id,
+            book_id: this.book_id
+          }
+        });
+      }
       this.clear();
       this.routerRefresh();
       this.refresh();
@@ -256,6 +283,7 @@ export default {
       this.book_id = this.$route.query.book_id;
       console.log("hi" + this.chapter_id);
       this.handleSelect(this.key);
+      this.getChapters(this.book_id);
     },
     getner(chapter_id = this.chapter_id) {
       if (this.ner_content == "") {
@@ -279,6 +307,19 @@ export default {
             console.error(error);
           });
       } else this.loading = false;
+    },
+    getChapters(book_id) {
+      const path = this.base_url + `chapters/${book_id}`;
+      axios
+        .get(path)
+        .then(res => {
+          this.chapters = res.data.chapters;
+          this.fullscreenLoading = false;
+        })
+        .catch(error => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
     },
     getContent(chapter_id = this.chapter_id) {
       if (this.content == "") {
@@ -410,7 +451,7 @@ export default {
     },
     getWordCloud(color, chapter_id = this.chapter_id) {
       console.log("color" + color);
-      if (this.wordFreqs.length == 0) {
+      if (this.wordFreqs == []) {
         const path = this.base_url + `process/wordcloud/${chapter_id}`;
         console.log(path);
         axios

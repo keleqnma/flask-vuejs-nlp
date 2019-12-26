@@ -1,10 +1,11 @@
-version: "2.0"
+version: "3.7"
 services:
   #后端，爬虫+api  
 
   backend:
     #image: flask-vuejs-nlp_backend
     build: ./backend
+    hostname: backend
     depends_on:
       - chrome
     ports:
@@ -23,6 +24,15 @@ services:
       - backend
     links:
       - backend
+    volumes:
+      - type: bind
+        source: ./frontend/nginx
+        target: /etc/nginx/conf.d
+      - type: bind
+        source: ./frontend/dist
+        target: /usr/share/nginx/html
+    
+
       
   #chrome驱动
   chrome:
