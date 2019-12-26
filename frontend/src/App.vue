@@ -69,14 +69,12 @@
 export default {
   data() {
     return {
-      base_url: "http://localhost:5000/cpNlp/api/v1.0/",
       routerAlive: true
     };
   },
   provide() {
     //在父组件中创建属性
     return {
-      base_url: this.base_url,
       routerRefresh: this.routerRefresh
     };
   },

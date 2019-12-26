@@ -212,7 +212,6 @@ export default {
   inject: ["routerRefresh"],
   data() {
     return {
-      base_url: "http://localhost:5000/cpNlp/api/v1.0/",
       key: "2",
       wordFreqs: [],
       show: Choose.ORIGIN,
@@ -235,8 +234,8 @@ export default {
       return map_ner[type];
     },
     clear() {
-      this.chapter_id = this.content = "";
-      this.wordFreqs = this.segcontent = this.post_segcontent = this.ner_content = this.senti_content = [];
+      this.chapter_id = this.content = this.wordFreqs = this.segcontent = this.post_segcontent = this.ner_content = this.senti_content =
+        "";
     },
     jump(val) {
       console.log(val);
@@ -288,13 +287,13 @@ export default {
     getner(chapter_id = this.chapter_id) {
       if (this.ner_content == "") {
         if (this.segcontent == "") {
-          const path = this.base_url + `process/segcontent/${chapter_id}`;
+          const path = `/api/process/segcontent/${chapter_id}`;
 
           axios.get(path).then(res => {
             this.segcontent = res.data.words;
           });
         }
-        const path = this.base_url + `process/nercontent/${chapter_id}`;
+        const path = `/api/process/nercontent/${chapter_id}`;
         this.loading = true;
         axios
           .get(path)
@@ -309,7 +308,7 @@ export default {
       } else this.loading = false;
     },
     getChapters(book_id) {
-      const path = this.base_url + `chapters/${book_id}`;
+      const path = `/api/chapters/${book_id}`;
       axios
         .get(path)
         .then(res => {
@@ -323,7 +322,7 @@ export default {
     },
     getContent(chapter_id = this.chapter_id) {
       if (this.content == "") {
-        const path = this.base_url + `chaptercontent/${chapter_id}`;
+        const path = `/api/chaptercontent/${chapter_id}`;
 
         axios
           .get(path)
@@ -339,7 +338,7 @@ export default {
     },
     getContentSeg(chapter_id = this.chapter_id) {
       if (this.segcontent == "") {
-        const path = this.base_url + `process/segcontent/${chapter_id}`;
+        const path = `/api/process/segcontent/${chapter_id}`;
 
         axios
           .get(path)
@@ -355,7 +354,7 @@ export default {
     },
     getContentSenti(chapter_id = this.chapter_id) {
       if (this.senti_content == "") {
-        const path = this.base_url + `process/senticontent/${chapter_id}`;
+        const path = `/api/process/senticontent/${chapter_id}`;
 
         axios
           .get(path)
@@ -372,14 +371,14 @@ export default {
     getPostContentSeg(chapter_id = this.chapter_id) {
       if (this.post_segcontent == "") {
         if (this.segcontent == "") {
-          const path = this.base_url + `process/segcontent/${chapter_id}`;
+          const path = `/api/process/segcontent/${chapter_id}`;
 
           axios.get(path).then(res => {
             this.segcontent = res.data.words;
           });
         }
 
-        const path = this.base_url + `process/postagcontentseg/${chapter_id}`;
+        const path = `/api/process/postagcontentseg/${chapter_id}`;
         this.loading = true;
         axios
           .get(path)
@@ -451,8 +450,8 @@ export default {
     },
     getWordCloud(color, chapter_id = this.chapter_id) {
       console.log("color" + color);
-      if (this.wordFreqs == []) {
-        const path = this.base_url + `process/wordcloud/${chapter_id}`;
+      if (this.wordFreqs == "") {
+        const path = `/api/process/wordcloud/${chapter_id}`;
         console.log(path);
         axios
           .get(path)

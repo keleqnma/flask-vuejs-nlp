@@ -86,7 +86,6 @@ export default {
     return {
       fullscreenLoading: false,
       books: [],
-      base_url: "http://localhost:5000/cpNlp/api/v1.0/",
       keyword: "",
       msg: ""
     };
@@ -94,7 +93,7 @@ export default {
   methods: {
     getRandomBook() {
       this.fullscreenLoading = true;
-      const path = this.base_url + "books";
+      const path = "/api/books";
       console.log(path);
       axios
         .get(path)
@@ -109,7 +108,7 @@ export default {
     },
     getKeywordBooks(keyword) {
       this.fullscreenLoading = true;
-      const path = this.base_url + `books/keyword/${keyword}`;
+      const path = `/api/books/keyword/${keyword}`;
       axios
         .get(path)
         .then(res => {
@@ -129,7 +128,6 @@ export default {
     }
   },
   created() {
-    console.log(this.base_url);
     this.getRandomBook();
   }
 };
