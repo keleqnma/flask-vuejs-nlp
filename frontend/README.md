@@ -1,29 +1,36 @@
-# client
+# Frontend
 
-## Project setup
+## 项目安装
+
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### 开发选项（一般用这个）
+
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### 部署选项
+
 ```
 npm run build
 ```
 
-### Run your tests
+### 测试
+
 ```
 npm run test
 ```
 
-### Lints and fixes files
+### 自动修正
+
 ```
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### 个性化设置
+
+参考 [Configuration Reference](https://cli.vuejs.org/config/).
+
