@@ -1,18 +1,20 @@
-[TOC]
 # Flask-vuejs-nlp
 本项目是我大数据的大作业，要求是在网站里实现nlp的一些功能。
 前端：vue, Jquery, elment-ui
 后端：flask
 部署：docker-compose
 ## Docker部署
-
-## 开发环境运行
 ```
 git clone https://github.com/keleqnma/flask-vuejs-nlp
 cd flask-vuejs-nlp
 docker-compose up-d
 ```
 打开 http://localhost:3000/ 查看前端页面，后端的接口和开发环境一样，请看下面的测试api部分
+## 开发环境运行
+```
+git clone https://github.com/keleqnma/flask-vuejs-nlp
+cd flask-vuejs-nlp
+```
 ### Backend
 #### 项目准备工作
 
@@ -32,7 +34,6 @@ pip install -r requirements.txt
 ```
 
 ##### 迁移更新数据库
-
 ```python
 python manage.py db migrate -m "v1.0"
 python manage.py db upgrade
