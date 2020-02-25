@@ -3,6 +3,26 @@
 前端：vue, Jquery, elment-ui
 后端：flask
 部署：docker-compose
+![image](https://github.com/keleqnma/flask-vuejs-nlp/blob/master/pics/%E6%9E%B6%E6%9E%84%E5%9B%BE.png)
+
+## api展示
+![image](https://github.com/keleqnma/flask-vuejs-nlp/blob/master/pics/api%E7%BB%93%E6%9E%9C%E7%A4%BA%E4%BE%8B1.png)
+![image](https://github.com/keleqnma/flask-vuejs-nlp/blob/master/pics/api%E7%BB%93%E6%9E%9C%E7%A4%BA%E4%BE%8B2.png)
+![image](https://github.com/keleqnma/flask-vuejs-nlp/blob/master/pics/api%E7%BB%93%E6%9E%9C%E7%A4%BA%E4%BE%8B3.png)
+## 页面展示
+![image](https://github.com/keleqnma/flask-vuejs-nlp/blob/master/pics/%E9%A6%96%E9%A1%B5.png)
+![image](https://github.com/keleqnma/flask-vuejs-nlp/blob/master/pics/%E4%B9%A6%E7%B1%8D.png)
+![image](https://github.com/keleqnma/flask-vuejs-nlp/blob/master/pics/%E5%9F%BA%E7%A1%80.png)
+![image](https://github.com/keleqnma/flask-vuejs-nlp/blob/master/pics/%E5%B1%8F%E8%94%BD.png)
+![image](https://github.com/keleqnma/flask-vuejs-nlp/blob/master/pics/%E5%88%86%E8%AF%8D.png)
+![image](https://github.com/keleqnma/flask-vuejs-nlp/blob/master/pics/%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB.png)
+![image](https://github.com/keleqnma/flask-vuejs-nlp/blob/master/pics/%E8%AF%8D%E4%BA%911.png)
+![image](https://github.com/keleqnma/flask-vuejs-nlp/blob/master/pics/%E8%AF%8D%E4%BA%912.png)
+![image](https://github.com/keleqnma/flask-vuejs-nlp/blob/master/pics/%E8%AF%8D%E4%BA%913.png)
+![image](https://github.com/keleqnma/flask-vuejs-nlp/blob/master/pics/%E8%AF%8D%E4%BA%914.png)
+![image](https://github.com/keleqnma/flask-vuejs-nlp/blob/master/pics/%E8%AF%8D%E6%80%A7%E6%A0%87%E6%B3%A8.png)
+![image](https://github.com/keleqnma/flask-vuejs-nlp/blob/master/pics/%E8%AF%8D%E6%80%A7%E6%A0%87%E6%B3%A8.png)
+
 ## Docker部署
 ```
 git clone https://github.com/keleqnma/flask-vuejs-nlp
