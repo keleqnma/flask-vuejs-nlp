@@ -16,7 +16,7 @@ Flask-SSLify==0.1.5
 importlib-metadata==1.2.0
 itsdangerous==1.1.0
 jiagu==0.2.2
-Jinja2==2.10.3
+Jinja2==2.11.3
 kiwisolver==1.1.0
 Mako==1.1.0
 MarkupSafe==1.1.1
